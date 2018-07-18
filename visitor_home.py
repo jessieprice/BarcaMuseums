@@ -24,7 +24,8 @@ MSM_OPTIONS = [
     "La Capella",
     "La Pedrera",
     "Museu Picasso",
-    "..."
+    "MACBA",
+    "CCCB"
 ]  # etc
 
 variable = StringVar(topFrame)
