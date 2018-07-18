@@ -20,9 +20,11 @@ entry_TypMsm.insert(0, "Type or Choose a Museum")
 
 # museum drop down menu options
 MSM_OPTIONS = [
-    "Museum 1",
-    "Museum 2",
-    "Museum 3"
+    "Barcelona History",
+    "La Capella",
+    "La Pedrera",
+    "Museu Picasso",
+    "..."
 ]  # etc
 
 variable = StringVar(topFrame)
