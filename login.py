@@ -3,6 +3,7 @@ from Tkinter import *
 # creates a window
 root = Tk()
 
+# header
 label_login = Label(root, text="Barcelona Museum Ticketing")
 label_login.grid(row=0, columnspan=2)
 
