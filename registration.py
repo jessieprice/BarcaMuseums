@@ -39,12 +39,12 @@ entry_ccExpr.grid(row=5, column=1)
 entry_ccSec.grid(row=6, column=1)
 
 # create account button
-create_acct = Button(root, text="Create Account")
-create_acct.grid(row=7, columnspan=2)
+create_acct_btn = Button(root, text="Create Account")
+create_acct_btn.grid(row=7, columnspan=2)
 
 # back button
-back = Button(root, text="Back")
-back.grid(row=8, columnspan=2)
+back_btn = Button(root, text="Back")
+back_btn.grid(row=8, columnspan=2)
 
 
 # allows window to be continuously on the screen until exit/minimize
