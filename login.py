@@ -3,23 +3,26 @@ from Tkinter import *
 # creates a window
 root = Tk()
 
-# rectangular frames
-topFrame = Frame(root)
-topFrame.pack()
-bottomFrame = Frame(root)
-bottomFrame.pack(side=BOTTOM)
+# login labels
+label_1 = Label(root, text="Username:")
+label_2 = Label(root, text="Password:")
 
-# buttons
-button1 = Button(topFrame, text="Button 1", fg="red")
-button2 = Button(topFrame, text="Button 2", fg="blue")
-button3 = Button(topFrame, text="Button 3", fg="green")
-button4 = Button(bottomFrame, text="Button 4", fg="purple")
+# login text fields
+entry_1 = Entry(root)
+entry_2 = Entry(root)
 
-# pack the buttons in order to display them
-button1.pack()
-button2.pack()
-button3.pack()
-button4.pack()
+# aligning login label and entry fields
+label_1.grid(row=0, sticky=E)
+label_2.grid(row=1, sticky=E)
+entry_1.grid(row=0, column=1)
+entry_2.grid(row=1, column=1)
+
+# keep me logged in checkbox
+c = Checkbutton(root, text="Keep me logged in")
+c.grid(columnspan=2)
+
+
+
 
 # allows window to be continuously on the screen until exit/minimize
 root.mainloop()
