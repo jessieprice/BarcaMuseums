@@ -3,7 +3,7 @@ from Tkinter import *
 # creates a window
 root = Tk()
 
-label_login = Label(root, text="LOGIN")
+label_login = Label(root, text="Barcelona Museum Ticketing")
 label_login.grid(row=0, columnspan=2)
 
 # login labels
@@ -27,6 +27,10 @@ c.grid(columnspan=2)
 # login button
 button1 = Button(root, text="Login")
 button1.grid(row=4, columnspan=2)
+
+# new user link
+label_nwUsr = Label(root, text="New user? Create account here")
+label_nwUsr.grid(row=5, columnspan=2)
 
 # allows window to be continuously on the screen until exit/minimize
 root.mainloop()
