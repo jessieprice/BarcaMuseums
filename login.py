@@ -26,8 +26,8 @@ c = Checkbutton(root, text="Keep me logged in")
 c.grid(columnspan=2)
 
 # login button
-button1 = Button(root, text="Login")
-button1.grid(row=4, columnspan=2)
+login_btn = Button(root, text="Login")
+login_btn.grid(row=4, columnspan=2)
 
 # new user link
 label_nwUsr = Label(root, text="New user? Create account here")
