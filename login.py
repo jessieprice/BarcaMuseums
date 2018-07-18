@@ -3,11 +3,23 @@ from Tkinter import *
 # creates a window
 root = Tk()
 
-# creates a label with text
-theLabel = Label(root, text="This is text")
+# rectangular frames
+topFrame = Frame(root)
+topFrame.pack()
+bottomFrame = Frame(root)
+bottomFrame.pack(side=BOTTOM)
 
-# "packs" the label somewhere on the screen (no formatting)
-theLabel.pack()
+# buttons
+button1 = Button(topFrame, text="Button 1", fg="red")
+button2 = Button(topFrame, text="Button 2", fg="blue")
+button3 = Button(topFrame, text="Button 3", fg="green")
+button4 = Button(bottomFrame, text="Button 4", fg="purple")
 
-# allows window to be continuously on the screen until exit/minimize is pressed
+# pack the buttons in order to display them
+button1.pack()
+button2.pack()
+button3.pack()
+button4.pack()
+
+# allows window to be continuously on the screen until exit/minimize
 root.mainloop()
