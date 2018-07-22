@@ -1,21 +1,19 @@
 from Tkinter import *
 import Tkinter as tk
-import mysql as mdb
-from PIL import ImageTk, Image
 import pymysql
-import mysql.connector
-
 
 # connects python to database
-# db = pymysql.connect(host='localhost', port=3306, user='root', passwd='Jp13615!', db='BMTRS')
-# cursor = db.cursor()
 
-# print db
+db = pymysql.connect(host='localhost', port=3306, user='root', passwd='Jp13615!', db='BMTRS')
+cursor = db.cursor()
+
+print db
 
 # general design things
 headerFont = ('helvetica', '48', 'bold')
 buttonFont = ('helvetica', '14')
 tableFont = ('helvetica', '14', 'bold')
+
 
 # master class that holds the container to switch between frames
 # when you call this class, init method will immediately start it up
@@ -39,7 +37,7 @@ class museumApp(tk.Tk):
 
         for F in (mainPage, loginPage, registerPage, accountPage, redirectWindow,
                   wrongLoginWindow, manageAccountPage, allMuseumsPage, myTicketsPage,
-                  myReviewsPage, curatorRequestPage):
+                  myReviewsPage, curatorRequestPage, passDifference):
             frame = F(container, self)
             self.frames[F] = frame
 
@@ -89,103 +87,147 @@ class loginPage(tk.Frame):
 
     def __init__(self, parent, controller):
 
+        self.controller = controller
+
         tk.Frame.__init__(self, parent)
 
-        # def loginAction(em, pa):
-        #     print em
-        #     global entryEmail
-        #     cursor.execute("SELECT Email FROM Visitor WHERE Email = 'em'")
-        #     if cursor.rowcount == 0:
-        #         print "saying can't be found"
-        #         controller.showFrame(redirectWindow)
-        #     else:
-        #         cursor.execute("SELECT Email FROM Visitor WHERE Email = 'em' AND Password = 'pa'")
-        #         if cursor.rowcount == 0:
-        #             controller.showFrame(wrongLoginWindow)
-        #         else:
-        #             controller.showFrame(accountPage)
+        self.emailLabel = Label(self, text = "Email: ", font = buttonFont)
+        self.passLabel = Label(self, text = "Password: ", font = buttonFont)
+        self.emailLabel.place(relx = .5, rely = .35, anchor = CENTER)
+        self.passLabel.place(relx = .5, rely = .55, anchor = CENTER)
 
-        emailLabel = Label(self, text = "Email: ", font = buttonFont)
-        passLabel = Label(self, text = "Password: ", font = buttonFont)
-        emailLabel.place(relx = .5, rely = .35, anchor = CENTER)
-        passLabel.place(relx = .5, rely = .55, anchor = CENTER)
+        self.entryEmail = Entry(self)
+        self.entryPassword = Entry(self)
 
-        entryEmail = Entry(self)
-        entryPassword = Entry(self)
-
-        entryEmail.place(relx = .5, rely = .4, anchor = CENTER)
-        entryEmail.config(width = 75)
-        entryPassword.place(relx = .5, rely = .6, anchor = CENTER)
-        entryPassword.config(width=75)
-
-        logButton = Button(self, text= "Login", font = buttonFont,
-                           command = lambda: controller.showFrame(accountPage))
-        logButton.config(width = 35)
-        logButton.place(relx = .5, rely = .85, anchor = CENTER)
+        self.entryEmail.place(relx = .5, rely = .4, anchor = CENTER)
+        self.entryEmail.config(width = 75)
+        self.entryPassword.place(relx = .5, rely = .6, anchor = CENTER)
+        self.entryPassword.config(width=75)
 
 
-        backButton = Button(self, text = "Back to Main Page", font = buttonFont,
+        self.logButton = Button(self, text= "Login", font = buttonFont,
+                           command = self.login)
+
+        self.logButton.config(width = 35)
+        self.logButton.place(relx = .5, rely = .85, anchor = CENTER)
+
+        self.backButton = Button(self, text = "Back to Main Page", font = buttonFont,
                             command = lambda: controller.showFrame(mainPage))
-        backButton.config(width = 15)
-        backButton.place(relx = .01, rely = .01)
+        self.backButton.config(width = 15)
+        self.backButton.place(relx = .01, rely = .01)
 
-        regButton = Button(self, text = "Whoops! I need to register!", font = buttonFont,
+        self.regButton = Button(self, text = "Whoops! I need to register!", font = buttonFont,
                            command = lambda: controller.showFrame(registerPage))
-        regButton.config(width = 35)
-        regButton.place(relx = .5, rely = .9, anchor = CENTER)
+        self.regButton.config(width = 35)
+        self.regButton.place(relx = .5, rely = .9, anchor = CENTER)
+
+    def login(self):
+        em = self.entryEmail.get()
+        pa = self.entryPassword.get()
+        cursor.execute("SELECT Email FROM Visitor WHERE Email = %s AND Pass = %s", (em, pa))
+        if cursor.rowcount == 1:
+            self.controller.showFrame(accountPage)
+        else:
+            cursor.execute("SELECT Email FROM Visitor WHERE Email = %s", em)
+            if cursor.rowcount == 1:
+                self.controller.showFrame(wrongLoginWindow)
+            else:
+                self.controller.showFrame(redirectWindow)
 
 
 class registerPage(tk.Frame):
 
     def __init__(self, parent, controller):
 
+        self.controller = controller
+
         tk.Frame.__init__(self, parent)
 
-        backButton = Button(self, text = "Back to Main Page", font = buttonFont,
+        self.backButton = Button(self, text = "Back to Main Page", font = buttonFont,
                             command = lambda : controller.showFrame(mainPage))
 
-        regButton = Button(self, text = "Register", font = buttonFont,
-                           command = lambda: controller.showFrame(accountPage))
+        self.regButton = Button(self, text = "Register", font = buttonFont,
+                           command = self.register)
 
-        backButton.config(width = 15)
-        backButton.place(relx = .01, rely = .01)
-        regButton.config(width = 35)
-        regButton.place(relx = .5, rely = .95, anchor = CENTER)
+        self.backButton.config(width = 15)
+        self.backButton.place(relx = .01, rely = .01)
+        self.regButton.config(width = 35)
+        self.regButton.place(relx = .5, rely = .95, anchor = CENTER)
 
-        titleLabel = Label(self, text = "Register for Your Account", font = headerFont)
-        emailLabel = Label(self, text = "Email: ", font = buttonFont)
-        passLabel = Label(self, text = "Password: ", font = buttonFont)
-        confirmLabel = Label(self, text = "Confirm Password: ", font = buttonFont)
-        CCNumLabel = Label(self, text = "Credit Card Number: ")
-        CCExpLabel = Label(self, text = "Credit Card Expiration Date: ")
-        CCSecLabel = Label(self, text = "Credit Card Security Code: ")
-        titleLabel.place(relx = .5, rely = .05, anchor = CENTER)
-        emailLabel.place(relx=.2, rely=.3, anchor=CENTER)
-        passLabel.place(relx=.2, rely=.4, anchor=CENTER)
-        confirmLabel.place(relx = .2, rely = .5, anchor = CENTER)
-        CCNumLabel.place(relx = .2, rely = .6, anchor = CENTER)
-        CCExpLabel.place(relx = .3, rely = .7, anchor = CENTER)
-        CCSecLabel.place(relx = .3, rely = .8, anchor = CENTER)
+        self.titleLabel = Label(self, text = "Register for Your Account", font = headerFont)
+        self.emailLabel = Label(self, text = "Email: ", font = buttonFont)
+        self.passLabel = Label(self, text = "Password: ", font = buttonFont)
+        self.confirmLabel = Label(self, text = "Confirm Password: ", font = buttonFont)
+        self.CCNumLabel = Label(self, text = "Credit Card Number: ")
+        self.CCExpLabelMonth = Label(self, text = "Credit Card Expiration Month: ")
+        self.CCExpLabelYear = Label(self, text = "Credit Card Expiration Year:")
+        self.CCSecLabel = Label(self, text = "Credit Card Security Code: ")
+        self.titleLabel.place(relx = .5, rely = .05, anchor = CENTER)
+        self.emailLabel.place(relx=.2, rely=.3, anchor=CENTER)
+        self.passLabel.place(relx=.2, rely=.4, anchor=CENTER)
+        self.confirmLabel.place(relx = .2, rely = .5, anchor = CENTER)
+        self.CCNumLabel.place(relx = .2, rely = .6, anchor = CENTER)
+        self.CCExpLabelMonth.place(relx = .25, rely = .7, anchor = CENTER)
+        self.CCExpLabelYear.place(relx = .65, rely = .7, anchor = CENTER)
+        self.CCSecLabel.place(relx = .3, rely = .8, anchor = CENTER)
 
-        createEmail = Entry(self)
-        createPassword = Entry(self)
-        createConfirm = Entry(self)
-        createCCNum = Entry(self)
-        createCCExp = Entry(self)
-        createCCSec = Entry(self)
+        self.createEmail = Entry(self)
+        self.createPassword = Entry(self)
+        self.createConfirm = Entry(self)
+        self.createCCNum = Entry(self)
+        self.createCCExpMonth = Entry(self)
+        self.createCCExpYear = Entry(self)
+        self.createCCSec = Entry(self)
 
-        createEmail.place(relx=.5, rely = .3, anchor=CENTER)
-        createEmail.config(width=60)
-        createPassword.place(relx=.5, rely=.4, anchor=CENTER)
-        createPassword.config(width=60)
-        createConfirm.place(relx=.5, rely = .5, anchor=CENTER)
-        createConfirm.config(width=60)
-        createCCNum.place(relx=.5, rely = .6, anchor=CENTER)
-        createCCNum.config(width=60)
-        createCCExp.place(relx=.5, rely = .7, anchor=CENTER)
-        createCCExp.config(width=20)
-        createCCSec.place(relx=.5, rely=.8, anchor=CENTER)
-        createCCSec.config(width=20)
+        self.createEmail.place(relx=.5, rely = .3, anchor=CENTER)
+        self.createEmail.config(width=60)
+        self.createPassword.place(relx=.5, rely=.4, anchor=CENTER)
+        self.createPassword.config(width=60)
+        self.createConfirm.place(relx=.5, rely = .5, anchor=CENTER)
+        self.createConfirm.config(width=60)
+        self.createCCNum.place(relx=.5, rely = .6, anchor=CENTER)
+        self.createCCNum.config(width=60)
+        self.createCCExpMonth.place(relx=.35, rely = .7, anchor=CENTER)
+        self.createCCExpMonth.config(width = 5)
+        self.createCCExpYear.place(relx =  .75, rely = .7, anchor = CENTER)
+        self.createCCExpYear.config(width = 5)
+        self.createCCSec.place(relx=.5, rely=.8, anchor=CENTER)
+        self.createCCSec.config(width=20)
+
+    def register(self):
+        em = self.createEmail.get()
+        pa = self.createPassword.get()
+        co = self.createConfirm.get()
+        ccnum = self.createCCNum.get()
+        ccexpm = self.createCCExpMonth.get()
+        ccexpy = self.createCCExpYear.get()
+        ccsec = self.createCCSec.get()
+        if (pa == co):
+            stuff = "INSERT INTO Visitor(Email, Pass, CCNum, CCExpMonth, CCExpYear, CCSecNum) " \
+                    "VALUES(%s, %s, %s, %s, %s, %s)"
+            cursor.execute(stuff, (em, pa, ccnum, ccexpm, ccexpy, ccsec))
+            db.commit()
+
+            self.controller.showFrame(accountPage)
+        else:
+            self.controller.showFrame(passDifference)
+
+
+class passDifference(tk.Frame):
+
+    def __init__(self, parent, controller):
+
+        tk.Frame.__init__(self, parent)
+
+        badButton = Button(self, text = "Passwords did not match. Click here to try again.", font = buttonFont,
+                           command = lambda: controller.showFrame(registerPage))
+        badButton.config(width = 80)
+        badButton.place(relx = .5, rely = .5, anchor = CENTER)
+
+        homeButton = Button(self, text="Back to Main Page", font=buttonFont,
+                            command=lambda: controller.showFrame(mainPage))
+        homeButton.config(width=15)
+        homeButton.place(relx=.01, rely=.01)
 
 
 class redirectWindow(tk.Frame):
